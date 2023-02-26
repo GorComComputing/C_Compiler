@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <Transactions>
-    <Transaction>2023.02.25 17:18:52.620,=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
-    <Transaction>2023.02.25 17:26:14.242,D:\IT\Delphi\8-bit-AON\Unit2.pas=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
-    <Transaction>2023.02.25 17:26:14.242,D:\IT\Delphi\8-bit-AON\Unit2.dfm=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.dfm</Transaction>
-    <Transaction>2023.02.25 17:26:25.410,D:\IT\Delphi\8-bit-AON\Project2.dproj=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Project2.dproj</Transaction>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.242,D:\IT\Delphi\8-bit-AON\Unit2.pas=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.242,D:\IT\Delphi\8-bit-AON\Unit2.dfm=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.620,=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.410,D:\IT\Delphi\8-bit-AON\Project2.dproj=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Project2.dproj</Transaction>
   </Transactions>
 </BorlandProject>

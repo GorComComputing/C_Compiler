@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
-  Vcl.Menus;
+  Vcl.Menus, Vcl.ComCtrls;
 
 type
   TForm2 = class(TForm)
@@ -13,7 +13,7 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
+    lRegA: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
@@ -98,6 +98,14 @@ type
     N2: TMenuItem;
     Save1: TMenuItem;
     Saveprogram1: TMenuItem;
+    ComboBox1: TComboBox;
+    Button1: TButton;
+    StatusBar1: TStatusBar;
+    Button2: TButton;
+    Button3: TButton;
+    ComboBox2: TComboBox;
+    Label68: TLabel;
+    procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -107,8 +115,20 @@ type
 var
   Form2: TForm2;
 
+// Регистры
+IPsim: integer;
+IRsim: integer;
+FLsim: Array[0..3] of Integer;       //CAEZ
+RegFile: Array[0..3] of Integer;     //0-AX, 1-BX, 2-CX, 3-DX
+
 implementation
 
 {$R *.dfm}
+
+procedure TForm2.Button2Click(Sender: TObject);
+begin
+   IPsim := 8;
+   lRegA.Caption := inttostr(IPsim);
+end;
 
 end.
