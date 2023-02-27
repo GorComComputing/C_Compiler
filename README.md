@@ -1,4 +1,4 @@
-# 8-bit AON Computer и компилятор языка С
+# Компилятор языка С и виртуальный процессор 8-bit-AON 
 
 ![Screenshot1.jpg](Screenshot1.jpg)
 
