@@ -8,36 +8,36 @@ uses
   Vcl.Menus, Vcl.ComCtrls;
 
 type
-  TForm2 = class(TForm)
+  TfrmMain = class(TForm)
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    lRegA: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
+    labelRegA: TLabel;
+    labelRegB: TLabel;
+    labelRegC: TLabel;
+    labelRegD: TLabel;
     Label9: TLabel;
-    Label10: TLabel;
+    labelRegIP: TLabel;
     Label11: TLabel;
-    Label12: TLabel;
+    labelRegTMP: TLabel;
     Label13: TLabel;
-    Label14: TLabel;
+    labelRegACC: TLabel;
     Label15: TLabel;
-    Label16: TLabel;
+    labelRegMAR: TLabel;
     Label17: TLabel;
-    Label18: TLabel;
+    labelRegFC: TLabel;
     Label19: TLabel;
-    Label20: TLabel;
+    labelRegFA: TLabel;
     Label21: TLabel;
-    Label22: TLabel;
+    labelRegFE: TLabel;
     Label23: TLabel;
-    Label24: TLabel;
+    labelRegFZ: TLabel;
     Label25: TLabel;
     Label26: TLabel;
-    Label27: TLabel;
+    labelRegIR: TLabel;
     Label28: TLabel;
-    Label29: TLabel;
+    labelRegST: TLabel;
     Label30: TLabel;
     Label31: TLabel;
     Label32: TLabel;
@@ -77,9 +77,9 @@ type
     Label61: TLabel;
     Label67: TLabel;
     Image1: TImage;
-    StringGrid1: TStringGrid;
-    Memo1: TMemo;
-    Memo2: TMemo;
+    sgMemory: TStringGrid;
+    mEditor: TMemo;
+    mConsole: TMemo;
     MainMenu1: TMainMenu;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
@@ -99,13 +99,24 @@ type
     Save1: TMenuItem;
     Saveprogram1: TMenuItem;
     ComboBox1: TComboBox;
-    Button1: TButton;
+    btnRun: TButton;
     StatusBar1: TStatusBar;
-    Button2: TButton;
-    Button3: TButton;
+    btnStep: TButton;
+    btnReset: TButton;
     ComboBox2: TComboBox;
     Label68: TLabel;
-    procedure Button2Click(Sender: TObject);
+    Label5: TLabel;
+    Label69: TLabel;
+    Label70: TLabel;
+    est1: TMenuItem;
+    UpperCase1: TMenuItem;
+    LowerCase1: TMenuItem;
+    procedure btnStepClick(Sender: TObject);
+    procedure mEditorChange(Sender: TObject);
+    procedure UpperCase1Click(Sender: TObject);
+    procedure LowerCase1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnResetClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -113,9 +124,9 @@ type
   end;
 
 var
-  Form2: TForm2;
+  frmMain: TfrmMain;
 
-// Регистры
+// Регистры симулятора
 IPsim: integer;
 IRsim: integer;
 FLsim: Array[0..3] of Integer;       //CAEZ
@@ -125,10 +136,61 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm2.Button2Click(Sender: TObject);
+procedure TfrmMain.btnResetClick(Sender: TObject);
+begin
+  // Инициализация регистров симулятора
+  IPsim := 0;
+  IRsim := 0;
+  //FLsim: Array[0..3] of Integer;       //CAEZ
+  //RegFile: Array[0..3] of Integer;     //0-AX, 1-BX, 2-CX, 3-DX
+
+  labelRegIP.Caption := format('%.2u',[IPsim]);//inttostr(IPsim);
+  labelRegIR.Caption := format('%.8u',[IRsim]);//inttostr(IRsim);
+end;
+
+procedure TfrmMain.btnStepClick(Sender: TObject);
 begin
    IPsim := 8;
-   lRegA.Caption := inttostr(IPsim);
+   labelRegA.Caption := inttostr(IPsim);
+end;
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+var
+   i, j : Integer;
+begin
+  // Инициализация регистров симулятора
+  IPsim := 0;
+  IRsim := 0;
+  //FLsim: Array[0..3] of Integer;       //CAEZ
+  //RegFile: Array[0..3] of Integer;     //0-AX, 1-BX, 2-CX, 3-DX
+
+  labelRegIP.Caption := format('%.2u',[IPsim]);//inttostr(IPsim);
+  labelRegIR.Caption := format('%.8u',[IRsim]);//inttostr(IRsim);
+
+  // Заполняем таблицу Memory
+  for i := 1 to sgMemory.RowCount - 1 do
+      sgMemory.Cells[0, i] := format('%.2x',[i-1]);
+  for i := 1 to sgMemory.ColCount - 1 do
+      sgMemory.Cells[i, 0] := format('%.2x',[i-1]);
+
+  for i := 1 to sgMemory.RowCount - 1 do
+    for j := 1 to sgMemory.ColCount - 1 do
+      sgMemory.Cells[j, i] := format('%.2x',[0]);
+end;
+
+procedure TfrmMain.LowerCase1Click(Sender: TObject);
+begin
+   mEditor.Lines.Text := AnsiLowerCase(mEditor.Lines.Text);
+end;
+
+procedure TfrmMain.mEditorChange(Sender: TObject);
+begin
+  Label69.Caption := 'Editor: ' + IntToStr(Length(mEditor.Lines.Text));
+end;
+
+procedure TfrmMain.UpperCase1Click(Sender: TObject);
+begin
+  mEditor.Lines.Text := AnsiUpperCase(mEditor.Lines.Text);
 end;
 
 end.
