@@ -948,9 +948,9 @@ object frmMain: TfrmMain
   object Label5: TLabel
     Left = 540
     Top = 0
-    Width = 93
+    Width = 42
     Height = 13
-    Caption = 'Memory: 256 bytes'
+    Caption = 'Memory:'
   end
   object Label69: TLabel
     Left = 8
@@ -989,6 +989,7 @@ object frmMain: TfrmMain
     Top = 19
     Width = 526
     Height = 623
+    ScrollBars = ssVertical
     TabOrder = 1
     OnChange = mEditorChange
   end
@@ -997,6 +998,7 @@ object frmMain: TfrmMain
     Top = 664
     Width = 526
     Height = 122
+    ScrollBars = ssVertical
     TabOrder = 2
   end
   object ComboBox1: TComboBox
@@ -1025,7 +1027,6 @@ object frmMain: TfrmMain
     Width = 1200
     Height = 19
     Panels = <>
-    ExplicitWidth = 1104
   end
   object btnStep: TButton
     Left = 1032
@@ -1084,8 +1085,9 @@ object frmMain: TfrmMain
     end
     object VM1: TMenuItem
       Caption = 'VM'
-      object Openprogram1: TMenuItem
-        Caption = 'Open program'
+      object LoadProgram1: TMenuItem
+        Caption = 'Load program'
+        OnClick = LoadProgram1Click
       end
       object Saveprogram1: TMenuItem
         Caption = 'Save program'

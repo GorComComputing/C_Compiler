@@ -9,7 +9,7 @@ AON в названии означает, что процессор спроек
 
 Статус проекта: Разрабатывается.
 
-Есть аналогичная версия на JavaScript. Вы можете увидеть как он работет [здесь](https://gorcomcomputing.github.io/8-bit-AON-Computer/). 
+Есть аналогичная версия на Java Script. Вы можете увидеть как он работет [здесь](https://gorcomcomputing.github.io/8-bit-AON-Computer/). 
 
 ## Характеристики компьютера
 - CPU 8-bit DATA, 16-bit ADDRESS;
