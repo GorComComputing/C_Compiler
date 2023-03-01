@@ -104,7 +104,7 @@ type
     StatusBar1: TStatusBar;
     btnStep: TButton;
     btnReset: TButton;
-    ComboBox2: TComboBox;
+    cmbCPUType: TComboBox;
     Label68: TLabel;
     Label5: TLabel;
     Label69: TLabel;
@@ -112,6 +112,10 @@ type
     est1: TMenuItem;
     UpperCase1: TMenuItem;
     LowerCase1: TMenuItem;
+    Timer1: TTimer;
+    Label6: TLabel;
+    labelRegSP: TLabel;
+    eRead: TEdit;
     procedure btnStepClick(Sender: TObject);
     procedure mEditorChange(Sender: TObject);
     procedure UpperCase1Click(Sender: TObject);
@@ -119,71 +123,69 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnResetClick(Sender: TObject);
     procedure LoadProgram1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure btnRunClick(Sender: TObject);
+    procedure Openfile1Click(Sender: TObject);
 
 
   private
     { Private declarations }
   public
     procedure StepSimulate();
+    procedure StepAON();
+    procedure StepOVM();
+    procedure ResetCPU();
     function IntToBin(Value: Longint; Digits: Integer): string;
   end;
 
 var
   frmMain: TfrmMain;
 
-  // Файл с программой
-  ff: Text;
+  isRun: Boolean;
 
   // Регистры симулятора
   IPsim: integer;
   IRsim: integer;
+  SP: integer;
   FLsim: Array[0..3] of Integer;       //CAEZ
   RegFile: Array[0..3] of Integer;     //0-AX, 1-BX, 2-CX, 3-DX
 
   //Память RAM
-  RAM: Array[0..255] of Byte;
+  RAM: Array[0..255] of Integer;
 
 implementation
 
 {$R *.dfm}
 
 procedure TfrmMain.btnResetClick(Sender: TObject);
-var
-   i: Integer;
 begin
-  // Инициализация регистров симулятора
-  IPsim := 0;
-  IRsim := 0;
-  for i := 0 to 3 do
+  // Сброс процессора
+  ResetCPU();
+end;
+
+procedure TfrmMain.btnRunClick(Sender: TObject);
+begin
+  if isRun = False then
+  begin
+    btnRun.Caption := 'Stop';
+    isRun := True;
+    Timer1.Enabled := True
+  end
+  else
     begin
-    FLsim[i] := 0;       //CAEZ
-    RegFile[i] := 0;    //0-AX, 1-BX, 2-CX, 3-DX
+    btnRun.Caption := 'Run';
+    isRun := False;
+    Timer1.Enabled := False;
     end;
-
-  labelRegMAR.Caption := format('%.2x',[0]);
-  labelRegTMP.Caption := format('%.2x',[0]);
-  labelRegACC.Caption := format('%.2x',[0]);
-  labelRegST.Caption := format('%.7x',[0]);
-
-  labelRegFC.Caption := format('%.1x',[FLsim[0]]);
-  labelRegFA.Caption := format('%.1x',[FLsim[1]]);
-  labelRegFE.Caption := format('%.1x',[FLsim[2]]);
-  labelRegFZ.Caption := format('%.1x',[FLsim[3]]);
-
-  labelRegA.Caption := format('%.2x',[RegFile[0]]);
-  labelRegB.Caption := format('%.2x',[RegFile[1]]);
-  labelRegC.Caption := format('%.2x',[RegFile[2]]);
-  labelRegD.Caption := format('%.2x',[RegFile[3]]);
-
-  labelRegIP.Caption := format('%.2x',[IPsim]);//inttostr(IPsim);
-  labelRegIR.Caption := IntToBin(IRsim, 7);//format('%.8x',[IRsim]);//inttostr(IRsim);
 end;
 
 procedure TfrmMain.btnStepClick(Sender: TObject);
 begin
-   //IPsim := 8;
-   //labelRegA.Caption := inttostr(IPsim);
-   StepSimulate();
+  Case cmbCPUType.ItemIndex of
+		0: StepSimulate();
+    1: StepAON();
+    2: StepOVM();
+  End;
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -193,14 +195,12 @@ begin
   // Инициализация регистров симулятора
   IPsim := 0;
   IRsim := 0;
+  SP := $E0;
   for i := 0 to 3 do
     begin
     FLsim[i] := 0;       //CAEZ
     RegFile[i] := 0;    //0-AX, 1-BX, 2-CX, 3-DX
     end;
-
-  for i := 0 to 255 do
-    RAM[i] := i;
 
   labelRegMAR.Caption := format('%.2x',[0]);
   labelRegTMP.Caption := format('%.2x',[0]);
@@ -219,6 +219,12 @@ begin
 
   labelRegIP.Caption := format('%.2x',[IPsim]);//inttostr(IPsim);
   labelRegIR.Caption := IntToBin(IRsim, 7);//format('%.8x',[IRsim]);//inttostr(IRsim);
+  labelRegSP.Caption := format('%.2x',[SP]);
+
+
+  // Заполняем память нулями
+  for i := 0 to 255 do
+    RAM[i] := 0;
 
   // Заполняем таблицу Memory
   for i := 1 to sgMemory.RowCount - 1 do
@@ -229,38 +235,40 @@ begin
   for i := 1 to sgMemory.RowCount - 1 do
     for j := 1 to sgMemory.ColCount - 1 do
       sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
+
+  sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
 end;
 
 procedure TfrmMain.LoadProgram1Click(Sender: TObject);
 var
-  i, j: Integer;
-  n: String;
-  A: TArray<System.Byte>;
+  i, j, n: Integer;
+  f: File;
 begin
   if OpenDialog1.Execute then
    begin
-    Label5.Caption := 'Memory: ' + OpenDialog1.FileName;
-    AssignFile(ff, OpenDialog1.FileName);
+    // Сброс процессора
+    ResetCPU();
 
-
-
- A := TFile.ReadAllBytes(OpenDialog1.FileName);
-
-    //Reset(ff);
-    //i := 0;
-    //while not eof(ff) do
+    // Заполняем память нулями
     for i := 0 to 255 do
-      begin
-      //if eof(ff) then Break;
-       //Read(ff, n);
-       RAM[i] := A[i];
-       //i := i + 1;
-      end;
-    CloseFile(ff);
+      RAM[i] := 0;
+
+    Label5.Caption := 'Memory: ' + OpenDialog1.FileName;
+    AssignFile(f, OpenDialog1.FileName);
+    Reset(f,1);
+    i := 0;
+    while not eof(f) do
+    begin
+      BlockRead(f,RAM[i],1);
+      i := i + 1;
+    end;
+    CloseFile(f);
+
 
     for i := 1 to sgMemory.RowCount - 1 do
       for j := 1 to sgMemory.ColCount - 1 do
         sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
+    sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
 
     end
      else
@@ -274,7 +282,22 @@ end;
 
 procedure TfrmMain.mEditorChange(Sender: TObject);
 begin
-  Label69.Caption := 'Editor: ' + IntToStr(Length(mEditor.Lines.Text));
+  //Label69.Caption := 'Editor: ' + IntToStr(Length(mEditor.Lines.Text));
+end;
+
+procedure TfrmMain.Openfile1Click(Sender: TObject);
+var
+  i, j, n: Integer;
+  f: File;
+begin
+  if OpenDialog1.Execute then
+   begin
+    Label69.Caption := 'Editor: ' + OpenDialog1.FileName;
+    mEditor.Lines.LoadFromFile(OpenDialog1.FileName);
+    mEditor.Text := Utf8ToAnsi(mEditor.Text);
+    end
+     else
+      //exit;
 end;
 
 procedure TfrmMain.UpperCase1Click(Sender: TObject);
@@ -283,11 +306,52 @@ begin
 end;
 
 
-// Шаг осциллятора
+// Сброс процессора
+procedure TfrmMain.ResetCPU();
+var
+   i: Integer;
+begin
+  //Остонавливаем процессор
+  isRun := False;
+
+  // Инициализация регистров симулятора
+  IPsim := 0;
+  IRsim := 0;
+  SP := $E0;
+  for i := 0 to 3 do
+    begin
+    FLsim[i] := 0;       //CAEZ
+    RegFile[i] := 0;    //0-AX, 1-BX, 2-CX, 3-DX
+    end;
+
+  labelRegMAR.Caption := format('%.2x',[0]);
+  labelRegTMP.Caption := format('%.2x',[0]);
+  labelRegACC.Caption := format('%.2x',[0]);
+  labelRegST.Caption := format('%.7x',[0]);
+
+  labelRegFC.Caption := format('%.1x',[FLsim[0]]);
+  labelRegFA.Caption := format('%.1x',[FLsim[1]]);
+  labelRegFE.Caption := format('%.1x',[FLsim[2]]);
+  labelRegFZ.Caption := format('%.1x',[FLsim[3]]);
+
+  labelRegA.Caption := format('%.2x',[RegFile[0]]);
+  labelRegB.Caption := format('%.2x',[RegFile[1]]);
+  labelRegC.Caption := format('%.2x',[RegFile[2]]);
+  labelRegD.Caption := format('%.2x',[RegFile[3]]);
+
+  labelRegIP.Caption := format('%.2x',[IPsim]);//inttostr(IPsim);
+  labelRegIR.Caption := IntToBin(IRsim, 7);//format('%.8x',[IRsim]);//inttostr(IRsim);
+  labelRegSP.Caption := format('%.2x',[SP]);
+
+  sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
+end;
+
+
+// Шаг осциллятора Simulator
 procedure TfrmMain.StepSimulate();
 var
   IPsimBefore, isALU, Operation, RegA, RegB, FC, FA, FE, FZ: Integer;
-  i: Integer;
+  i, j: Integer;
 begin
   // Fetch Instruction
 	IPsimBefore := IPsim;
@@ -381,7 +445,10 @@ begin
 			end;
 		1: begin // Store
 			RAM[RegFile[RegA]] := RegFile[RegB];//String.fromCharCode(RegFile[RegB]);
-			//document.querySelector("#mem-block"+RegFile[RegA]).textContent = paddy(dec2hex(RAM[RegFile[RegA]].charCodeAt(0)),2);
+
+      for i := 1 to sgMemory.RowCount - 1 do
+        for j := 1 to sgMemory.ColCount - 1 do
+          sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
 			//DrawASCII(RegFile[RegA]);
 			end;
 		2: begin // Data
@@ -391,17 +458,29 @@ begin
 		3: begin // JMP to Reg
 			IPsim := RegFile[RegB];
       mConsole.Lines.add('IPsim now: ' + IntToStr(IPsim));
+      sgMemory.Selection := TGridRect(rect((IPsim MOD 16) + 1, (IPsim DIV 16) + 1, (IPsim MOD 16) + 1, (IPsim DIV 16) + 1));
+      labelRegIP.Caption := format('%.2x',[IPsim]);
 			end;
 		4: begin // JMP to Address
 			IPsim := RAM[IPsim];//.charCodeAt(0);
       mConsole.Lines.add('IPsim now: ' + IntToStr(IPsim));
+      sgMemory.Selection := TGridRect(rect((IPsim MOD 16) + 1, (IPsim DIV 16) + 1, (IPsim MOD 16) + 1, (IPsim DIV 16) + 1));
+      labelRegIP.Caption := format('%.2x',[IPsim]);
 			end;
 		5: begin // JMP IF to Address
-			if(((FC AND FLsim[0]) <> 0) or ((FA AND FLsim[1]) <> 0) or ((FE AND FLsim[2]) <> 0) or ((FZ AND FLsim[3]) <> 0)) then begin
+			if(((FC AND FLsim[0]) <> 0) or ((FA AND FLsim[1]) <> 0) or ((FE AND FLsim[2]) <> 0) or ((FZ AND FLsim[3]) <> 0)) then
+      begin
 			IPsim := RAM[IPsim];//.charCodeAt(0);
       mConsole.Lines.add('IPsim now: ' + IntToStr(IPsim));
+      sgMemory.Selection := TGridRect(rect((IPsim MOD 16) + 1, (IPsim DIV 16) + 1, (IPsim MOD 16) + 1, (IPsim DIV 16) + 1));
+      labelRegIP.Caption := format('%.2x',[IPsim]);
 			end
-			else IPsim := IPsim + 1;
+			else
+      begin
+      IPsim := IPsim + 1;
+      sgMemory.Selection := TGridRect(rect((IPsim MOD 16) + 1, (IPsim DIV 16) + 1, (IPsim MOD 16) + 1, (IPsim DIV 16) + 1));
+      labelRegIP.Caption := format('%.2x',[IPsim]);
+      end;
 			end;
 		6: begin // Clear Flags
       for i := 0 to 3 do
@@ -415,10 +494,11 @@ begin
 
 
 
-
-
-
   // Вывод содержимого регистров
+  labelRegIP.Caption := format('%.2x',[IPsim]);//inttostr(IPsim);
+  labelRegIR.Caption := IntToBin(IRsim, 7);//format('%.8x',[IRsim]);//inttostr(IRsim);
+  sgMemory.Selection := TGridRect(rect((IPsim MOD 16) + 1, (IPsim DIV 16) + 1, (IPsim MOD 16) + 1, (IPsim DIV 16) + 1));
+
   labelRegFC.Caption := format('%.1x',[FLsim[0]]);
   labelRegFA.Caption := format('%.1x',[FLsim[1]]);
   labelRegFE.Caption := format('%.1x',[FLsim[2]]);
@@ -431,6 +511,201 @@ begin
 
 end;
 
+
+// Шаг осциллятора AON
+procedure TfrmMain.StepAON();
+
+begin
+  //
+end;
+
+
+// Шаг осциллятора OVM
+procedure TfrmMain.StepOVM();
+const
+   cmStop   = -1;
+
+   cmAdd    = -2;
+   cmSub    = -3;
+   cmMult   = -4;
+   cmDiv    = -5;
+   cmMod    = -6;
+   cmNeg    = -7;
+
+   cmLoad   = -8;
+   cmSave  = -9;
+
+   cmDup    = -10;
+   cmDrop   = -11;
+   cmSwap   = -12;
+   cmOver   = -13;
+
+   cmGOTO   = -14;
+   cmIfEQ   = -15;
+   cmIfNE   = -16;
+   cmIfLE   = -17;
+   cmIfLT   = -18;
+   cmIfGE   = -19;
+   cmIfGT   = -20;
+
+   cmIn     = -21;
+   cmOut    = -22;
+   cmOutLn  = -23;
+var
+   i, j, Buf: Integer;
+begin
+  IRsim := RAM[IPsim];
+  IPsim := IPsim + 1;
+  // Вывод содержимого регистров
+  labelRegIP.Caption := format('%.2x',[IPsim]);
+  labelRegIR.Caption := IntToBin(IRsim, 7);
+  labelRegSP.Caption := IntToBin(SP, 7);
+  sgMemory.Selection := TGridRect(rect((IPsim MOD 16) + 1, (IPsim DIV 16) + 1, (IPsim MOD 16) + 1, (IPsim DIV 16) + 1));
+
+      if IRsim >= 0 then begin
+         SP := SP - 1;
+         RAM[SP] := IRsim;
+         end
+      else
+         case IRsim of
+         cmAdd:
+            begin
+               SP := SP + 1;
+               RAM[SP] := RAM[SP] + RAM[SP-1];
+            end;
+         cmSub:
+            begin
+               SP := SP + 1;
+               RAM[SP] := RAM[SP] - RAM[SP-1];
+            end;
+         cmMult:
+            begin
+               SP := SP + 1;
+               RAM[SP] := RAM[SP]*RAM[SP-1];
+            end;
+         cmDiv:
+            begin
+               SP := SP + 1;
+               RAM[SP] := RAM[SP] div RAM[SP-1];
+            end;
+         cmMod:
+            begin
+               SP := SP + 1;
+               RAM[SP] := RAM[SP] mod RAM[SP-1];
+            end;
+         cmNeg:
+            RAM[SP] := -RAM[SP];
+         cmLoad:
+            RAM[SP] := RAM[RAM[SP]];
+         cmSave:
+            begin
+               RAM[RAM[SP+1]] := RAM[SP];
+               SP := SP + 2;
+            end;
+         cmDup:
+            begin
+               SP := SP - 1;
+               RAM[SP] := RAM[SP+1];
+            end;
+         cmDrop:
+            begin
+               SP := SP + 1;
+            end;
+         cmSwap:
+            begin
+               Buf := RAM[SP];
+               RAM[SP] := RAM[SP+1];
+               RAM[SP+1] := Buf;
+            end;
+         cmOver:
+            begin
+               SP := SP - 1;
+               RAM[SP] := RAM[SP+2];
+            end;
+         cmGOTO:
+            begin
+               IPsim := RAM[SP];
+               SP := SP + 1;
+            end;
+         cmIfEQ:
+            begin
+               if RAM[SP+2] = RAM[SP+1] then
+                  IPsim := RAM[SP];
+               SP := SP + 3;
+            end;
+         cmIfNE:
+            begin
+               if RAM[SP+2] <> RAM[SP+1] then
+                  IPsim := RAM[SP];
+               SP := SP + 3;
+            end;
+         cmIfLE:
+            begin
+               if RAM[SP+2] <= RAM[SP+1] then
+                  IPsim := RAM[SP];
+               SP := SP + 3;
+            end;
+         cmIfLT:
+            begin
+               if RAM[SP+2] < RAM[SP+1] then
+                  IPsim := RAM[SP];
+               SP := SP + 3;
+            end;
+         cmIfGE:
+            begin
+               if RAM[SP+2] >= RAM[SP+1] then
+                  IPsim := RAM[SP];
+               SP := SP + 3;
+            end;
+         cmIfGT:
+            begin
+               if RAM[SP+2] > RAM[SP+1] then
+                  IPsim := RAM[SP];
+               SP := SP + 3;
+            end;
+         cmIn:
+            begin
+               SP := SP - 1;
+               //Write('?');
+               mConsole.Lines.add('?');
+               //Readln( RAM[SP] );
+            end;
+         cmOut:
+            begin
+               //Write(RAM[SP+1]:RAM[SP]);
+               mConsole.Lines.add(RAM[SP+1]);
+               SP := SP + 2;
+            end;
+         cmOutLn:
+            //WriteLn;
+            mConsole.Lines.add('\n');
+         else begin
+            //WriteLn('Недопустимый код операции');
+            mConsole.Lines.add('Недопустимый код операции\n');
+            RAM[IPsim] := cmStop;
+         end;
+         end;
+      IRsim := RAM[IPsim];
+
+  // Вывод содержимого регистров
+  labelRegIP.Caption := format('%.2x',[IPsim]);
+  labelRegIR.Caption := IntToBin(IRsim, 7);
+  labelRegSP.Caption := format('%.2x',[SP]);
+  for i := 1 to sgMemory.RowCount - 1 do
+    for j := 1 to sgMemory.ColCount - 1 do
+      sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
+  sgMemory.Selection := TGridRect(rect((IPsim MOD 16) + 1, (IPsim DIV 16) + 1, (IPsim MOD 16) + 1, (IPsim DIV 16) + 1));
+end;
+
+
+procedure TfrmMain.Timer1Timer(Sender: TObject);
+begin
+  Case cmbCPUType.ItemIndex of
+		0: StepSimulate();
+    1: StepAON();
+    2: StepOVM();
+  End;
+end;
 
 // Integer to Binary
 function TfrmMain.IntToBin(Value: Longint; Digits: Integer): string;

@@ -165,8 +165,8 @@ object frmMain: TfrmMain
     Transparent = False
   end
   object Label11: TLabel
-    Left = 1024
-    Top = 379
+    Left = 952
+    Top = 425
     Width = 31
     Height = 16
     Caption = 'TMP:'
@@ -178,8 +178,8 @@ object frmMain: TfrmMain
     ParentFont = False
   end
   object labelRegTMP: TLabel
-    Left = 1054
-    Top = 379
+    Left = 989
+    Top = 425
     Width = 14
     Height = 16
     Caption = '00'
@@ -207,7 +207,7 @@ object frmMain: TfrmMain
     ParentFont = False
   end
   object labelRegACC: TLabel
-    Left = 984
+    Left = 989
     Top = 403
     Width = 14
     Height = 16
@@ -236,7 +236,7 @@ object frmMain: TfrmMain
     ParentFont = False
   end
   object labelRegMAR: TLabel
-    Left = 984
+    Left = 990
     Top = 379
     Width = 14
     Height = 16
@@ -381,8 +381,8 @@ object frmMain: TfrmMain
     ParentFont = False
   end
   object Label26: TLabel
-    Left = 954
-    Top = 427
+    Left = 953
+    Top = 447
     Width = 19
     Height = 16
     Caption = 'IR:'
@@ -394,8 +394,8 @@ object frmMain: TfrmMain
     ParentFont = False
   end
   object labelRegIR: TLabel
-    Left = 984
-    Top = 427
+    Left = 988
+    Top = 447
     Width = 56
     Height = 16
     Caption = '00000000'
@@ -410,8 +410,8 @@ object frmMain: TfrmMain
     Transparent = False
   end
   object Label28: TLabel
-    Left = 954
-    Top = 451
+    Left = 953
+    Top = 471
     Width = 20
     Height = 16
     Caption = 'ST:'
@@ -423,8 +423,8 @@ object frmMain: TfrmMain
     ParentFont = False
   end
   object labelRegST: TLabel
-    Left = 984
-    Top = 451
+    Left = 988
+    Top = 471
     Width = 49
     Height = 16
     Caption = '0000000'
@@ -635,7 +635,7 @@ object frmMain: TfrmMain
   end
   object Label62: TLabel
     Left = 1054
-    Top = 722
+    Top = 725
     Width = 51
     Height = 16
     Caption = 'TMP set:'
@@ -648,7 +648,7 @@ object frmMain: TfrmMain
   end
   object Label63: TLabel
     Left = 1109
-    Top = 722
+    Top = 725
     Width = 7
     Height = 16
     Caption = '0'
@@ -966,6 +966,38 @@ object frmMain: TfrmMain
     Height = 13
     Caption = 'Console:'
   end
+  object Label6: TLabel
+    Left = 1019
+    Top = 355
+    Width = 21
+    Height = 16
+    Caption = 'SP:'
+    Color = clSkyBlue
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+    Transparent = True
+  end
+  object labelRegSP: TLabel
+    Left = 1049
+    Top = 355
+    Width = 14
+    Height = 16
+    Caption = '00'
+    Color = clGreen
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    Transparent = False
+  end
   object sgMemory: TStringGrid
     Left = 540
     Top = 19
@@ -997,7 +1029,7 @@ object frmMain: TfrmMain
     Left = 8
     Top = 664
     Width = 526
-    Height = 122
+    Height = 106
     ScrollBars = ssVertical
     TabOrder = 2
   end
@@ -1020,6 +1052,7 @@ object frmMain: TfrmMain
     Height = 25
     Caption = 'Run'
     TabOrder = 4
+    OnClick = btnRunClick
   end
   object StatusBar1: TStatusBar
     Left = 0
@@ -1027,6 +1060,8 @@ object frmMain: TfrmMain
     Width = 1200
     Height = 19
     Panels = <>
+    ExplicitLeft = -174
+    ExplicitTop = 784
   end
   object btnStep: TButton
     Left = 1032
@@ -1046,7 +1081,7 @@ object frmMain: TfrmMain
     TabOrder = 7
     OnClick = btnResetClick
   end
-  object ComboBox2: TComboBox
+  object cmbCPUType: TComboBox
     Left = 1032
     Top = 267
     Width = 75
@@ -1057,7 +1092,15 @@ object frmMain: TfrmMain
     Text = 'Simulator'
     Items.Strings = (
       'Simulator'
-      'AON')
+      'AON'
+      'OVM')
+  end
+  object eRead: TEdit
+    Left = 8
+    Top = 769
+    Width = 526
+    Height = 21
+    TabOrder = 9
   end
   object MainMenu1: TMainMenu
     Left = 1144
@@ -1066,6 +1109,7 @@ object frmMain: TfrmMain
       Caption = 'Compiler'
       object Openfile1: TMenuItem
         Caption = 'Open source'
+        OnClick = Openfile1Click
       end
       object Save1: TMenuItem
         Caption = 'Save source'
@@ -1127,5 +1171,12 @@ object frmMain: TfrmMain
   object SaveDialog1: TSaveDialog
     Left = 1144
     Top = 720
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = Timer1Timer
+    Left = 1144
+    Top = 584
   end
 end
