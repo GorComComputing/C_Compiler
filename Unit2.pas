@@ -96,10 +96,9 @@ type
     Reset1: TMenuItem;
     N1: TMenuItem;
     Clearmemory1: TMenuItem;
-    N2: TMenuItem;
     Save1: TMenuItem;
     Saveprogram1: TMenuItem;
-    ComboBox1: TComboBox;
+    cmbHz: TComboBox;
     btnRun: TButton;
     StatusBar1: TStatusBar;
     btnStep: TButton;
@@ -115,7 +114,16 @@ type
     Timer1: TTimer;
     Label6: TLabel;
     labelRegSP: TLabel;
-    eRead: TEdit;
+    LoadOVM1: TMenuItem;
+    Compile1: TMenuItem;
+    N2: TMenuItem;
+    Settings1: TMenuItem;
+    Font1: TMenuItem;
+    Color1: TMenuItem;
+    FontDialog1: TFontDialog;
+    ColorDialog1: TColorDialog;
+    aPanel1: TPanel;
+    mPanel1: TPanel;
     procedure btnStepClick(Sender: TObject);
     procedure mEditorChange(Sender: TObject);
     procedure UpperCase1Click(Sender: TObject);
@@ -126,6 +134,17 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure btnRunClick(Sender: TObject);
     procedure Openfile1Click(Sender: TObject);
+    procedure Assembly1Click(Sender: TObject);
+    procedure cmbCPUTypeChange(Sender: TObject);
+    procedure Clearmemory1Click(Sender: TObject);
+    procedure cmbHzChange(Sender: TObject);
+    procedure LoadOVM1Click(Sender: TObject);
+    procedure Run1Click(Sender: TObject);
+    procedure Step1Click(Sender: TObject);
+    procedure Reset1Click(Sender: TObject);
+    procedure Save1Click(Sender: TObject);
+    procedure Font1Click(Sender: TObject);
+    procedure Color1Click(Sender: TObject);
 
 
   private
@@ -144,9 +163,9 @@ var
   isRun: Boolean;
 
   // Регистры симулятора
-  IPsim: integer;
-  IRsim: integer;
-  SP: integer;
+  IPsim: Integer;
+  IRsim: Integer;
+  SP: Integer;
   FLsim: Array[0..3] of Integer;       //CAEZ
   RegFile: Array[0..3] of Integer;     //0-AX, 1-BX, 2-CX, 3-DX
 
@@ -156,6 +175,14 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TfrmMain.Assembly1Click(Sender: TObject);
+var
+  s: String;
+begin
+  s := mEditor.Text[2];
+  mConsole.Text := s;
+end;
 
 procedure TfrmMain.btnResetClick(Sender: TObject);
 begin
@@ -186,6 +213,278 @@ begin
     1: StepAON();
     2: StepOVM();
   End;
+end;
+
+procedure TfrmMain.Clearmemory1Click(Sender: TObject);
+var
+  i, j: Integer;
+begin
+  // Заполняем память нулями
+  for i := 0 to 255 do
+    RAM[i] := 0;
+
+  // Заполняем таблицу Memory
+  for i := 1 to sgMemory.RowCount - 1 do
+    for j := 1 to sgMemory.ColCount - 1 do
+      sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
+
+  sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
+end;
+
+procedure TfrmMain.cmbCPUTypeChange(Sender: TObject);
+begin
+   Case cmbCPUType.ItemIndex of
+   0: begin
+    Label1.Visible := True;
+    Label2.Visible := True;
+    Label3.Visible := True;
+    Label4.Visible := True;
+    Label9.Visible := True;
+
+    Label17.Visible := True;
+    Label19.Visible := True;
+    Label21.Visible := True;
+    Label23.Visible := True;
+    Label25.Visible := True;
+
+    labelRegA.Visible := True;
+    labelRegB.Visible := True;
+    labelRegC.Visible := True;
+    labelRegD.Visible := True;
+    labelRegIP.Visible := True;
+    labelRegFC.Visible := True;
+    labelRegFA.Visible := True;
+    labelRegFE.Visible := True;
+    labelRegFZ.Visible := True;
+
+
+    Label6.Visible := False;
+    labelRegSP.Visible := False;
+    labelRegMAR.Visible := False;
+    labelRegACC.Visible := False;
+    labelRegTMP.Visible := False;
+    labelRegIR.Visible := False;
+    labelRegST.Visible := False;
+    Label26.Visible := False;
+    Label28.Visible := False;
+    Label11.Visible := False;
+    Label13.Visible := False;
+    Label15.Visible := False;
+
+    Label30.Visible := False;
+    Label31.Visible := False;
+    Label32.Visible := False;
+    Label33.Visible := False;
+    Label34.Visible := False;
+    Label35.Visible := False;
+    Label36.Visible := False;
+    Label37.Visible := False;
+    Label38.Visible := False;
+    Label39.Visible := False;
+    Label40.Visible := False;
+    Label41.Visible := False;
+    Label42.Visible := False;
+    Label43.Visible := False;
+    Label44.Visible := False;
+    Label45.Visible := False;
+    Label46.Visible := False;
+    Label47.Visible := False;
+    Label48.Visible := False;
+    Label49.Visible := False;
+    Label50.Visible := False;
+    Label51.Visible := False;
+    Label52.Visible := False;
+    Label53.Visible := False;
+    Label54.Visible := False;
+    Label55.Visible := False;
+    Label56.Visible := False;
+    Label57.Visible := False;
+    Label58.Visible := False;
+    Label59.Visible := False;
+    Label60.Visible := False;
+    Label61.Visible := False;
+    Label62.Visible := False;
+    Label63.Visible := False;
+    Label64.Visible := False;
+    Label65.Visible := False;
+    Label66.Visible := False;
+    Label67.Visible := False;
+
+   end;
+   1: begin
+    Label1.Visible := True;
+    Label2.Visible := True;
+    Label3.Visible := True;
+    Label4.Visible := True;
+    Label9.Visible := True;
+    Label11.Visible := True;
+    Label13.Visible := True;
+    Label15.Visible := True;
+    Label17.Visible := True;
+    Label19.Visible := True;
+    Label21.Visible := True;
+    Label23.Visible := True;
+    Label25.Visible := True;
+    Label26.Visible := True;
+    Label28.Visible := True;
+    labelRegA.Visible := True;
+    labelRegB.Visible := True;
+    labelRegC.Visible := True;
+    labelRegD.Visible := True;
+    labelRegIP.Visible := True;
+    labelRegFC.Visible := True;
+    labelRegFA.Visible := True;
+    labelRegFE.Visible := True;
+    labelRegFZ.Visible := True;
+    labelRegMAR.Visible := True;
+    labelRegACC.Visible := True;
+    labelRegTMP.Visible := True;
+    labelRegIR.Visible := True;
+    labelRegST.Visible := True;
+
+    Label6.Visible := False;
+    labelRegSP.Visible := False;
+
+    Label30.Visible := True;
+    Label31.Visible := True;
+    Label32.Visible := True;
+    Label33.Visible := True;
+    Label34.Visible := True;
+    Label35.Visible := True;
+    Label36.Visible := True;
+    Label37.Visible := True;
+    Label38.Visible := True;
+    Label39.Visible := True;
+    Label40.Visible := True;
+    Label41.Visible := True;
+    Label42.Visible := True;
+    Label43.Visible := True;
+    Label44.Visible := True;
+    Label45.Visible := True;
+    Label46.Visible := True;
+    Label47.Visible := True;
+    Label48.Visible := True;
+    Label49.Visible := True;
+    Label50.Visible := True;
+    Label51.Visible := True;
+    Label52.Visible := True;
+    Label53.Visible := True;
+    Label54.Visible := True;
+    Label55.Visible := True;
+    Label56.Visible := True;
+    Label57.Visible := True;
+    Label58.Visible := True;
+    Label59.Visible := True;
+    Label60.Visible := True;
+    Label61.Visible := True;
+    Label62.Visible := True;
+    Label63.Visible := True;
+    Label64.Visible := True;
+    Label65.Visible := True;
+    Label66.Visible := True;
+    Label67.Visible := True;
+   end;
+   2: begin
+    Label1.Visible := False;
+    Label2.Visible := False;
+    Label3.Visible := False;
+    Label4.Visible := False;
+    Label9.Visible := False;
+    Label11.Visible := False;
+    Label13.Visible := False;
+    Label15.Visible := False;
+    Label17.Visible := False;
+    Label19.Visible := False;
+    Label21.Visible := False;
+    Label23.Visible := False;
+    Label25.Visible := False;
+    Label26.Visible := False;
+    Label28.Visible := False;
+    labelRegA.Visible := False;
+    labelRegB.Visible := False;
+    labelRegC.Visible := False;
+    labelRegD.Visible := False;
+    labelRegIP.Visible := False;
+    labelRegFC.Visible := False;
+    labelRegFA.Visible := False;
+    labelRegFE.Visible := False;
+    labelRegFZ.Visible := False;
+    labelRegMAR.Visible := False;
+    labelRegACC.Visible := False;
+    labelRegTMP.Visible := False;
+    labelRegIR.Visible := False;
+    labelRegST.Visible := False;
+
+    Label6.Visible := True;
+    labelRegSP.Visible := True;
+    labelRegIP.Visible := True;
+    Label9.Visible := True;
+
+    Label30.Visible := False;
+    Label31.Visible := False;
+    Label32.Visible := False;
+    Label33.Visible := False;
+    Label34.Visible := False;
+    Label35.Visible := False;
+    Label36.Visible := False;
+    Label37.Visible := False;
+    Label38.Visible := False;
+    Label39.Visible := False;
+    Label40.Visible := False;
+    Label41.Visible := False;
+    Label42.Visible := False;
+    Label43.Visible := False;
+    Label44.Visible := False;
+    Label45.Visible := False;
+    Label46.Visible := False;
+    Label47.Visible := False;
+    Label48.Visible := False;
+    Label49.Visible := False;
+    Label50.Visible := False;
+    Label51.Visible := False;
+    Label52.Visible := False;
+    Label53.Visible := False;
+    Label54.Visible := False;
+    Label55.Visible := False;
+    Label56.Visible := False;
+    Label57.Visible := False;
+    Label58.Visible := False;
+    Label59.Visible := False;
+    Label60.Visible := False;
+    Label61.Visible := False;
+    Label62.Visible := False;
+    Label63.Visible := False;
+    Label64.Visible := False;
+    Label65.Visible := False;
+    Label66.Visible := False;
+    Label67.Visible := False;
+   end;
+
+
+   End;
+
+end;
+
+procedure TfrmMain.cmbHzChange(Sender: TObject);
+begin
+Case cmbHz.ItemIndex of
+   0: Timer1.Interval := 1000;
+   1: Timer1.Interval := 100;
+   2: Timer1.Interval := 10;
+   3: Timer1.Interval := 1;
+End;
+end;
+
+procedure TfrmMain.Color1Click(Sender: TObject);
+begin
+  if ColorDialog1.Execute then
+    mEditor.Color := ColorDialog1.Color;
+end;
+
+procedure TfrmMain.Font1Click(Sender: TObject);
+begin
+  if FontDialog1.Execute then
+    mEditor.Font := FontDialog1.Font;
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -237,6 +536,114 @@ begin
       sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
 
   sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
+end;
+
+procedure TfrmMain.LoadOVM1Click(Sender: TObject);
+var
+  i, j: Integer;
+begin
+
+    // Сброс процессора
+    ResetCPU();
+
+    // Заполняем память нулями
+    for i := 0 to 255 do
+      RAM[i] := 0;
+
+    Label5.Caption := 'Memory: OVM test program Prime';
+
+  {
+  RAM[0] := 100;
+  RAM[1] := -21;
+  RAM[2] := -9;
+  RAM[3] := 101;
+  RAM[4] := 2;
+  RAM[5] := -9;
+  RAM[6] := 100;
+  RAM[7] := -8;
+  RAM[8] := 101;
+  RAM[9] := -8;
+  RAM[10] := -6;
+  RAM[11] := 0;
+  RAM[12] := 22;
+  RAM[13] := -19;
+  RAM[14] := 101;
+  RAM[15] := 101;
+  RAM[16] := -8;
+  RAM[17] := 1;
+  RAM[18] := -2;
+  RAM[19] := -9;
+  RAM[20] := 6;
+  RAM[21] := -14;
+  RAM[22] := 101;
+  RAM[23] := -8;
+  RAM[24] := 100;
+  RAM[25] := -8;
+  RAM[26] := 34;
+  RAM[27] := -20;
+  RAM[28] := 100;
+  RAM[29] := -8;
+  RAM[30] := 0;
+  RAM[31] := -22;
+  RAM[32] := 37;
+  RAM[33] := -14;
+  RAM[34] := 0;
+  RAM[35] := 0;
+  RAM[36] := -22;
+  RAM[37] := -23;
+  RAM[38] := -1;    }
+
+
+  RAM[0] := -21;
+  RAM[1] := 2;
+  RAM[2] := -13;
+  RAM[3] := -13;
+  RAM[4] := -6;
+  RAM[5] := 0;
+  RAM[6] := 12;
+  RAM[7] := -15;
+  RAM[8] := 1;
+  RAM[9] := -2;
+  RAM[10] := 2;
+  RAM[11] := -14;
+  RAM[12] := -13;
+  RAM[13] := 17;
+  RAM[14] := -15;
+  RAM[15] := -11;
+  RAM[16] := 0;
+  RAM[17] := 0;
+  RAM[18] := -22;
+  RAM[19] := -23;
+  RAM[20] := -1;
+
+  {  IN,
+    2,
+    OVER,
+    OVER,
+    MOD,
+    0,
+    12,
+    IFEQ,
+    1,
+    ADD,
+    2,
+    GOTO,
+    OVER,
+    17,
+    IFEQ,
+    DROP,
+    0,
+    0,
+    OUT,
+    LN,
+    STOP       }
+
+  for i := 1 to sgMemory.RowCount - 1 do
+    for j := 1 to sgMemory.ColCount - 1 do
+      sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
+
+  sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
+
 end;
 
 procedure TfrmMain.LoadProgram1Click(Sender: TObject);
@@ -307,12 +714,19 @@ end;
 
 
 // Сброс процессора
+procedure TfrmMain.Reset1Click(Sender: TObject);
+begin
+  btnReset.Click();
+end;
+
 procedure TfrmMain.ResetCPU();
 var
    i: Integer;
 begin
   //Остонавливаем процессор
   isRun := False;
+  btnRun.Caption := 'Run';
+  Timer1.Enabled := False;
 
   // Инициализация регистров симулятора
   IPsim := 0;
@@ -346,6 +760,11 @@ begin
   sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
 end;
 
+
+procedure TfrmMain.Run1Click(Sender: TObject);
+begin
+  btnRun.Click();
+end;
 
 // Шаг осциллятора Simulator
 procedure TfrmMain.StepSimulate();
@@ -513,6 +932,20 @@ end;
 
 
 // Шаг осциллятора AON
+procedure TfrmMain.Save1Click(Sender: TObject);
+begin
+  if SaveDialog1.Execute then
+    begin
+    mEditor.Lines.SaveToFile(SaveDialog1.FileName);
+    Label69.Caption := 'Editor: ' + SaveDialog1.FileName;
+    end;
+end;
+
+procedure TfrmMain.Step1Click(Sender: TObject);
+begin
+  btnStep.Click();
+end;
+
 procedure TfrmMain.StepAON();
 
 begin
@@ -568,6 +1001,12 @@ begin
          end
       else
          case IRsim of
+         cmStop:
+            begin
+               btnRun.Caption := 'Run';
+               isRun := False;
+               Timer1.Enabled := False;
+            end;
          cmAdd:
             begin
                SP := SP + 1;
@@ -666,22 +1105,38 @@ begin
          cmIn:
             begin
                SP := SP - 1;
+
+
+               //btnRun.Caption := 'Run';
+               //isRun := False;
+               Timer1.Enabled := False;
                //Write('?');
                mConsole.Lines.add('?');
+               RAM[SP] := StrToInt(InputBox('OVM', 'Введите число', ''));
+               mConsole.Lines.add(IntToStr(RAM[SP]));
+
+               if isRun then begin
+                Timer1.Enabled := True;
+               end;
+
+              //btnRun.Caption := 'Stop';
+              //isRun := True;
+
+
                //Readln( RAM[SP] );
             end;
          cmOut:
             begin
                //Write(RAM[SP+1]:RAM[SP]);
-               mConsole.Lines.add(RAM[SP+1]);
+               mConsole.Lines.add(IntToStr(RAM[SP+1]));
                SP := SP + 2;
             end;
          cmOutLn:
             //WriteLn;
-            mConsole.Lines.add('\n');
+            mConsole.Lines.add('');
          else begin
             //WriteLn('Недопустимый код операции');
-            mConsole.Lines.add('Недопустимый код операции\n');
+            mConsole.Lines.add('Недопустимый код операции');
             RAM[IPsim] := cmStop;
          end;
          end;
