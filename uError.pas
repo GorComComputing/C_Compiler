@@ -18,7 +18,7 @@ procedure Warning(Msg : string);
 implementation
 
 uses
-   uText, ufMain, uScan;
+   uText, ufMain, uScan, uAsmScan;
 
 
 // Основная функция сообщения об ошибке

@@ -8,8 +8,9 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
   Vcl.Menus, Vcl.ComCtrls,
   System.Types, System.IOUtils, Vcl.Buttons,
-  uOVM, uSimulator,           // Виртуальные машины
-  uText, uScan, uGen, uPars;  // Компилятор Oberon
+  uOVM, uSimulator,               // Виртуальные машины
+  uText, uScan, uGen, uPars,      // Компилятор Oberon
+  uAsmScan, uAsmTable, uAsmUnit;  // Ассемблер виртуальной машины OVM
 
 
 type
@@ -184,13 +185,13 @@ implementation
 {$R *.dfm}
 
 
-// Запуск ассемблера
+// Запуск ассемблера OVM
 procedure TfrmMain.Assembly1Click(Sender: TObject);
-var
-  s: String;
 begin
-  s := mEditor.Text[2];
-  mConsole.Text := s;
+   mConsole.Lines.add('Ассемблер виртуальной машины OVM');
+   uAsmTable.InitNameTable;
+   uAsmScan.InitScan;
+   uAsmUnit.Assemble;
 end;
 
 
@@ -569,15 +570,22 @@ begin
   // Проверка параметров командной строки
   if ParamCount > 0 then begin
 
-    // исходник
-    if (ParamStr(1)[Length(ParamStr(1)) ] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 2] = '.') then  begin
+    // исходник  *.gc
+    if (ParamStr(1)[Length(ParamStr(1))] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 2] = '.') then  begin
+      frmMain.Caption := 'Виртуальный процессор 8-bit-AON - ' + ParamStr(1);
+      mEditor.Lines.LoadFromFile(ParamStr(1));
+      mEditor.Text := Utf8ToAnsi(mEditor.Text);
+    end;
+
+    // исходник  *.oas
+    if (ParamStr(1)[Length(ParamStr(1))] = 's') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'a') and (ParamStr(1)[Length(ParamStr(1)) - 2] = 'o') and (ParamStr(1)[Length(ParamStr(1)) - 3] = '.') then  begin
       frmMain.Caption := 'Виртуальный процессор 8-bit-AON - ' + ParamStr(1);
       mEditor.Lines.LoadFromFile(ParamStr(1));
       mEditor.Text := Utf8ToAnsi(mEditor.Text);
     end;
 
     // машинный код
-    if (ParamStr(1)[Length(ParamStr(1)) ] = 'o') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 2] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 3] = '.') then  begin
+    if (ParamStr(1)[Length(ParamStr(1))] = 'o') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 2] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 3] = '.') then  begin
       // Сброс процессора
       ResetCPU();
 
@@ -726,7 +734,7 @@ end;
 // Открыть файл с программой
 procedure TfrmMain.LoadProgram1Click(Sender: TObject);
 var
-  i, j, n: Integer;
+  i, j: Integer;
   f: File;
 begin
   if OpenDialog1.Execute then
@@ -774,12 +782,6 @@ begin
    mConsole.Lines.add('Компилятор языка Оberon');
    ResetText;
    InitScan;
-   {NextLex;
-   frmMain.mConsole.lines.text := frmMain.mConsole.lines.text + IntToStr(integer(Lex));
-   while Ch <> chEOT do begin
-    NextLex;
-    frmMain.mConsole.lines.text := frmMain.mConsole.lines.text + IntToStr(integer(Lex));
-   end;  }
    InitGen;
    Compile; {Компиляция}
 end;
