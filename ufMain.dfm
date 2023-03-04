@@ -847,8 +847,6 @@ object frmMain: TfrmMain
     Align = alRight
     BevelOuter = bvSpace
     TabOrder = 1
-    ExplicitTop = 25
-    ExplicitHeight = 767
     object Label5: TLabel
       Left = 12
       Top = 8
@@ -1138,8 +1136,6 @@ object frmMain: TfrmMain
     Height = 769
     Align = alClient
     TabOrder = 2
-    ExplicitTop = 25
-    ExplicitHeight = 767
     object Splitter1: TSplitter
       Left = 1
       Top = 471
@@ -1165,7 +1161,6 @@ object frmMain: TfrmMain
       ParentFont = False
       ScrollBars = ssVertical
       TabOrder = 0
-      ExplicitHeight = 616
     end
     object mConsole: TMemo
       Left = 1
@@ -1182,7 +1177,6 @@ object frmMain: TfrmMain
       ParentFont = False
       ScrollBars = ssVertical
       TabOrder = 1
-      ExplicitTop = 472
     end
   end
   object Panel1: TPanel
@@ -1264,6 +1258,7 @@ object frmMain: TfrmMain
       end
       object Saveprogram1: TMenuItem
         Caption = 'Save to file'
+        OnClick = Saveprogram1Click
       end
       object Clearmemory1: TMenuItem
         Caption = 'Clear memory'

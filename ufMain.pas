@@ -152,6 +152,8 @@ type
     procedure SpeedButton1Click(Sender: TObject);
     procedure OberonCompile1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure Saveprogram1Click(Sender: TObject);
 
 
   private
@@ -175,7 +177,7 @@ var
   RegFile: Array[0..3] of Integer;     //0-AX, 1-BX, 2-CX, 3-DX
 
   //Память RAM
-  RAM: Array[0..255] of Integer;
+  RAM: Array[0..255] of ShortInt;//Integer;
 
 implementation
 
@@ -494,7 +496,8 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
-   i, j : Integer;
+  i, j, n: Integer;
+  f: File;
 begin
   // Инициализация регистров симулятора
   IPsim := 0;
@@ -543,6 +546,48 @@ begin
   sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
 
   ConsoleHeight := mConsole.Height;
+
+  if ParamCount > 0 then begin
+    if (ParamStr(1)[Length(ParamStr(1)) ] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 2] = '.') then  begin
+      frmMain.Caption := 'Виртуальный процессор 8-bit-AON - ' + ParamStr(1);
+      mEditor.Lines.LoadFromFile(ParamStr(1));
+      mEditor.Text := Utf8ToAnsi(mEditor.Text);
+    end;
+
+    if (ParamStr(1)[Length(ParamStr(1)) ] = 'o') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 2] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 3] = '.') then  begin
+      // Сброс процессора
+      ResetCPU();
+
+      // Заполняем память нулями
+      for i := 0 to 255 do
+        RAM[i] := 0;
+
+      Label5.Caption := 'Memory: ' + ParamStr(1);
+      AssignFile(f, ParamStr(1));
+      Reset(f,1);
+      i := 0;
+      while not eof(f) do
+        begin
+        BlockRead(f,RAM[i],1);
+        i := i + 1;
+        end;
+      CloseFile(f);
+
+      for i := 1 to sgMemory.RowCount - 1 do
+        for j := 1 to sgMemory.ColCount - 1 do
+          sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);
+      sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
+
+      cmbCPUType.ItemIndex := 2;
+      cmbCPUTypeChange(cmbCPUType);
+      frmMain.Caption := 'Виртуальный процессор 8-bit-AON - ' + ParamStr(1);
+      aPanel1.Visible := False;
+      mEditor.Visible := False;
+      mConsole.Align := alClient;
+      btnRun.Click;
+    end;
+
+  end;
 end;
 
 procedure TfrmMain.LoadOVM1Click(Sender: TObject);
@@ -685,8 +730,8 @@ begin
     sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
 
     end
-     else
-      //exit;
+  else
+    //exit;
 end;
 
 procedure TfrmMain.LowerCase1Click(Sender: TObject);
@@ -716,9 +761,9 @@ begin
 end;
 
 procedure TfrmMain.Openfile1Click(Sender: TObject);
-var
-  i, j, n: Integer;
-  f: File;
+//var
+ // i, j, n: Integer;
+ // f: File;
 begin
   if OpenDialog1.Execute then
    begin
@@ -726,8 +771,8 @@ begin
     mEditor.Lines.LoadFromFile(OpenDialog1.FileName);
     mEditor.Text := Utf8ToAnsi(mEditor.Text);
     end
-     else
-      //exit;
+  else
+    //exit;
 end;
 
 procedure TfrmMain.UpperCase1Click(Sender: TObject);
@@ -799,6 +844,21 @@ begin
     end;
 end;
 
+procedure TfrmMain.Saveprogram1Click(Sender: TObject);
+var
+ // i, j, n: Integer;
+  f: File;
+begin
+  if SaveDialog1.Execute then
+    begin
+    AssignFile(f, SaveDialog1.FileName);
+    Rewrite(f, 1);
+    blockwrite(f, RAM, 256);
+    Label5.Caption := 'Memory: ' + SaveDialog1.FileName;
+    end;
+
+end;
+
 procedure TfrmMain.SpeedButton1Click(Sender: TObject);
 begin
   aPanel1.Visible := not aPanel1.Visible;
@@ -808,7 +868,6 @@ procedure TfrmMain.SpeedButton2Click(Sender: TObject);
 begin
     mEditor.Visible := not mEditor.Visible;
     if mEditor.Visible then begin
-
       mConsole.Height := ConsoleHeight;
       mConsole.Align := alBottom;
       Splitter1.Top := 471;
@@ -818,6 +877,14 @@ begin
       mConsole.Align := alClient;
     end;
 
+end;
+
+procedure TfrmMain.SpeedButton3Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to ParamCount do
+    ShowMessage('Параметр '+IntToStr(i)+' = '+ParamStr(i));
 end;
 
 procedure TfrmMain.Step1Click(Sender: TObject);

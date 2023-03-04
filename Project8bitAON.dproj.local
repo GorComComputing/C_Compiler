@@ -1,29 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.242,D:\IT\Delphi\8-bit-AON\Unit2.dfm=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.115,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uTable.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.995,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.096,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uPars.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.303,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.254,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uGen.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.579,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.209,D:\IT\Delphi\8-bit-AON\Unit2.pas=D:\IT\Delphi\8-bit-AON\ufMain.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.209,D:\IT\Delphi\8-bit-AON\Unit2.dfm=D:\IT\Delphi\8-bit-AON\ufMain.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.242,C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.dfm=D:\IT\Delphi\8-bit-AON\Unit2.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.084,D:\IT\Delphi\8-bit-AON\uOVM.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.124,D:\IT\Delphi\8-bit-AON\Project2.dproj=D:\IT\Delphi\8-bit-AON\Project8bitAON.dproj</Transaction>
     <Transaction>1899.12.30 00:00:00.000.620,=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.410,D:\IT\Delphi\8-bit-AON\Project2.dproj=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Project2.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.242,D:\IT\Delphi\8-bit-AON\Unit2.pas=C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
-    <Transaction>2023.03.03 16:31:16.770,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 16:31:45.913,D:\IT\Delphi\8-bit-AON\uOVM.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 16:48:09.084,D:\IT\Delphi\8-bit-AON\uOVM.pas=</Transaction>
-    <Transaction>2023.03.03 16:53:04.789,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 16:53:26.948,D:\IT\Delphi\8-bit-AON\uText.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 17:04:05.927,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 17:04:26.131,D:\IT\Delphi\8-bit-AON\uOVM.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 17:09:16.970,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 17:09:31.704,D:\IT\Delphi\8-bit-AON\uError.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 17:51:07.691,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 17:51:42.346,D:\IT\Delphi\8-bit-AON\uSimulator.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 18:44:49.743,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 18:45:08.023,D:\IT\Delphi\8-bit-AON\uScan.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 19:10:05.303,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 19:10:24.254,D:\IT\Delphi\8-bit-AON\uGen.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 19:12:55.579,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 19:13:15.115,D:\IT\Delphi\8-bit-AON\uTable.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 19:18:58.995,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 19:19:09.096,D:\IT\Delphi\8-bit-AON\uPars.pas=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
-    <Transaction>2023.03.03 20:05:17.124,D:\IT\Delphi\8-bit-AON\Project8bitAON.dproj=D:\IT\Delphi\8-bit-AON\Project2.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.242,C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Unit2.pas=D:\IT\Delphi\8-bit-AON\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.789,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.948,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uText.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.927,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.410,C:\Users\TuYa\Documents\Embarcadero\Studio\Projects\Project2.dproj=D:\IT\Delphi\8-bit-AON\Project2.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.770,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.913,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uOVM.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.131,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uOVM.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.346,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uSimulator.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.743,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.023,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uScan.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.970,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.704,D:\IT\Delphi\8-bit-AON\Unit1.pas=D:\IT\Delphi\8-bit-AON\uError.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.691,=D:\IT\Delphi\8-bit-AON\Unit1.pas</Transaction>
   </Transactions>
 </BorlandProject>

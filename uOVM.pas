@@ -49,7 +49,7 @@ const
 implementation
 
 uses
-  Unit2;
+  ufMain;
 
 // Шаг осциллятора OVM
 procedure StepOVM();

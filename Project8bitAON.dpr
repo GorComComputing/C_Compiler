@@ -2,7 +2,7 @@ program Project8bitAON;
 
 uses
   Vcl.Forms,
-  Unit2 in 'Unit2.pas' {frmMain},
+  ufMain in 'ufMain.pas' {frmMain},
   uText in 'uText.pas',
   uOVM in 'uOVM.pas',
   uError in 'uError.pas',

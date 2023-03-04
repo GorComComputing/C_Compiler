@@ -19,6 +19,6 @@ AON в названии означает, что процессор спроек
 - Keyboard.
 
 
-Copyright (c) 2022 Evgeny Goryachev  
+Copyright (c) 2023 Evgeny Goryachev    
 Gor.Com 
 
