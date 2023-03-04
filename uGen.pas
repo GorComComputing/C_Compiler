@@ -1,5 +1,5 @@
 unit uGen;
-{ Генератор кода }
+{Генератор кода}
 
 interface
 
@@ -7,7 +7,7 @@ uses
    uScan, uTable;
 
 var
-   PC : integer;
+   PC : integer;  // Счетчик команд времени компиляции
 
 procedure InitGen;
 
@@ -29,21 +29,27 @@ implementation
 uses
    uOVM, uError, ufMain;
 
+
+// Инициализация нулем (Счетчик команд времени компиляции)
 procedure InitGen;
 begin
    PC := 0;
 end;
 
+
+// Генерация очередной команды
 procedure Gen(Cmd: integer);
 begin
    if PC < MemSize then begin
       RAM[PC] := Cmd;
-      PC := PC+1;
+      PC := PC + 1;
       end
    else
       Error('Недостаточно памяти для кода');
 end;
 
+
+// Фиксируем наверху (записываем в ячейку памяти наверху)
 procedure Fixup(A: integer);
 var
    temp: integer;
@@ -55,6 +61,8 @@ begin
    end;
 end;
 
+
+//
 procedure GenAbs;
 begin
    Gen(cmDup);
@@ -101,12 +109,16 @@ begin
    end;
 end;
 
+
+// генерируем адрес переменной
 procedure GenAddr(X: tObj);
 begin
    Gen(X^.Val); {В текущую ячейку адрес предыдущей + 2}
-   X^.Val := PC+1; {Адрес+2 = PC+1}
+   X^.Val := PC + 1; {Адрес+2 = PC+1}
 end;
 
+
+// Размещенире переменных в памяти
 procedure AllocateVariables;
 var
    VRef: tObj; {Ссылка на переменную в таблице имен}

@@ -1,5 +1,5 @@
 unit uSimulator;
-// Симулятор процессора 8-bit-AON
+{Симулятор процессора 8-bit-AON}
 
 interface
 

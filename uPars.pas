@@ -1,5 +1,5 @@
 unit uPars;
-{ Распознаватель }
+{Синтаксический анализатор}
 
 interface
 
@@ -34,15 +34,18 @@ const
 procedure StatSeq; forward;
 procedure Expression(var t: tType); forward;
 
+
+// проверяет следующую лексему
 procedure Check(L: tLex; M: string);
 begin
-   if Lex <> L then
+   if Lex <> L then    // (НЕ читает следующую)
       Expected(M)
-   else
+   else                // (Читает следующую)
       NextLex;
 end;
 
-(* ["+" | "-"] (Число | Имя) *)
+
+// ["+" | "-"] (Число | Имя).
 procedure ConstExpr(var V: integer);
 var
    X  : tObj;
@@ -73,7 +76,8 @@ begin
       V := -V;
 end;
 
-(* Имя "=" КонстВыраж *)
+
+// Имя "=" КонстВыраж.
 procedure ConstDecl;
 var
    ConstRef: tObj; {Ссылка на имя в таблице}
@@ -86,6 +90,8 @@ begin
    ConstRef^.Cat := catConst;
 end;
 
+
+//  Тип = Имя.
 procedure ParseType;
 var
    TypeRef : tObj;
@@ -102,7 +108,8 @@ begin
    end;
 end;
 
-(* Имя {"," Имя} ":" Тип *)
+
+// Имя {"," Имя} ":" Тип.
 procedure VarDecl;
 var
    NameRef : tObj;
@@ -128,8 +135,11 @@ begin
    ParseType;
 end;
 
-(* {CONST {ОбъявлКонст ";"}
-    |VAR {ОбъявлПерем ";"} } *)
+
+//   {CONST
+//      {ОбъявлКонст ";"}
+//   |VAR
+//      {ОбъявлПерем ";"} }.
 procedure DeclSeq;
 begin
    while Lex in [lexCONST, lexVAR] do begin
@@ -189,6 +199,11 @@ begin
    end;
 end;
 
+
+// Множитель =
+//   Имя ["(" Выраж | Тип ")"]
+//   | Число
+//   | "(" Выраж ")".
 procedure Factor(var T : tType);
 var
    X : tObj;
@@ -232,18 +247,20 @@ begin
       Expected('имя, число или "("');
 end;
 
+
+//  Слагаемое = Множитель {ОперУмн Множитель}.
 procedure Term(var T: tType);
 var
    Op : tLex;
 begin
-   Factor(T);
+   Factor(T);     // множитель
    if Lex in [lexMult, lexDIV, lexMOD] then begin
       if T <> typInt then
          Error('Несоответствие операции типу операнда');
       repeat
          Op := Lex;
          NextLex;
-         Factor(T);
+         Factor(T);      //множитель
          if T <> typInt then
             Expected('выражение целого типа');                 case Op of
          lexMult: Gen(cmMult);
@@ -254,7 +271,8 @@ begin
    end;
 end;
 
-(* ["+"|"-"] Слагаемое {ОперСлож Слагаемое} *)
+
+// ПростоеВыраж = ["+"|"-"] Слагаемое {ОперСлож Слагаемое}.
 procedure SimpleExpr(var T : tType);
 var
    Op : tLex;
@@ -262,14 +280,14 @@ begin
    if Lex in [lexPlus, lexMinus] then begin
       Op := Lex;
       NextLex;
-      Term(T);
+      Term(T);  // слагаемое
       if T <> typInt then
          Expected('выражение целого типа');
       if Op = lexMinus then
          Gen(cmNeg);
       end
    else
-      Term(T);
+      Term(T);   // слагаемое
    if Lex in [lexPlus, lexMinus] then begin
       if T <> typInt then
          Error('Несоответствие операции типу операнда');
@@ -287,7 +305,8 @@ begin
    end;
 end;
 
-(* ПростоеВыраж [Отношение ПростоеВыраж] *)
+
+// Выраж = ПростоеВыраж [Отношение ПростоеВыраж].
 procedure Expression(var T : tType);
 var
    Op : tLex;
@@ -307,7 +326,8 @@ begin
    end; {иначе тип равен типу первого простого выражения}
 end;
 
-(* Переменная = Имя. *)
+
+// проверка переменной
 procedure Variable;
 var
    X : tObj;
@@ -382,16 +402,19 @@ begin
    end;
 end;
 
+
+//
 procedure BoolExpression;
 var
    T : tType;
 begin
    Expression(T);
-   if T <> typBool then
+   if T <> typBool then     // TestBool(T)
       Expected('логическое выражение');
 end;
 
-(* Переменная ":=" Выраж *)
+
+//   Переменная ":=" Выраж
 procedure AssStatement;
 begin
    Variable;
@@ -404,7 +427,8 @@ begin
       Expected('":="')
 end;
 
-(* Имя ["(" { Выраж | Переменная } ")"] *)
+
+//   |[Имя "."] Имя ["(" [Параметр {"," Параметр}] ")"]
 procedure CallStatement(sp : integer);
 begin
    Check(lexName, 'имя процедуры');
@@ -419,6 +443,14 @@ begin
       Expected('"("');
 end;
 
+
+//   IF Выраж THEN
+//      ПослОператоров
+//   {ELSIF Выраж THEN
+//      ПослОператоров}
+//   [ELSE
+//      ПослОператоров]
+//    END
 procedure IfStatement;
 var
    CondPC   : integer;
@@ -455,6 +487,10 @@ begin
    Fixup(LastGOTO);     {Направить сюда все GOTO        }
 end;
 
+
+//    WHILE Выраж DO
+//      ПослОператоров
+//    END
 procedure WhileStatement;
 var
    WhilePC  : integer;
@@ -469,14 +505,29 @@ begin
    Check(lexEND, 'END');
    Gen(WhilePC);
    Gen(cmGOTO);
-   Fixup(CondPC);
+   Fixup(CondPC);     // адресная привязка
 end;
 
+
+//[
+//   Переменная ":=" Выраж
+//   |[Имя "."] Имя ["(" [Параметр {"," Параметр}] ")"]
+//   |IF Выраж THEN
+//      ПослОператоров
+//   {ELSIF Выраж THEN
+//      ПослОператоров}
+//   [ELSE
+//      ПослОператоров]
+//    END
+//   |WHILE Выраж DO
+//      ПослОператоров
+//    END
+//].
 procedure Statement;
 var
    X : tObj;
 begin
-   if Lex = lexName then begin
+   if Lex = lexName then begin     // AssOrCall()
       Find(Name, X);
       if X^.Cat = catModule then begin
          NextLex;
@@ -497,13 +548,14 @@ begin
             'обозначение переменной или процедуры'
          );
       end
-   else if Lex = lexIF then
+   else if Lex = lexIF then       // IfStatement()
       IfStatement
-   else if Lex = lexWHILE then
+   else if Lex = lexWHILE then    //WhileStatement()
       WhileStatement
 end;
 
-(* Оператор {";" Оператор} *)
+
+//   Оператор {";" Оператор }.
 procedure StatSeq;
 begin
    Statement;    {Оператор}
@@ -513,6 +565,8 @@ begin
    end;
 end;
 
+
+//
 procedure ImportModule;
 var
    ImpRef: tObj;
@@ -535,7 +589,8 @@ begin
       Expected('имя импортируемого модуля');
 end;
 
-(* IMPORT Имя { "," Имя } ";" *)
+
+//   IMPORT Имя {"," Имя} ";".
 procedure Import;
 begin
    Check(lexIMPORT, 'IMPORT');
@@ -547,8 +602,13 @@ begin
    Check(lexSemi, '";"');
 end;
 
-(* MODULE Имя ";" [Импорт] ПослОбъявл
-   [BEGIN ПослОператоров] END Имя "." *)
+
+//   MODULE Имя ";"
+//   [Импорт]
+//   ПослОбъявл
+//   [BEGIN
+//      ПослОператоров]
+//   END Имя ".".
 procedure Module;
 var
    ModRef: tObj; {Ссылка на имя модуля в таблице}
@@ -583,6 +643,8 @@ begin
    AllocateVariables; {Размещение переменных}
 end;
 
+
+// основная функция компилятора
 procedure Compile;
 var
   i, j: Integer;
@@ -605,17 +667,11 @@ begin
    Module;
    CloseScope; {Блок модуля}
    CloseScope; {Блок стандартных имен}
+
    frmMain.mConsole.lines.text := frmMain.mConsole.lines.text + #13#10;
-   //WriteLn;
    frmMain.mConsole.lines.text := frmMain.mConsole.lines.text + 'Компиляция завершена успешно' + #13#10;
-   //WriteLn('Компиляция завершена');
-
-
-
-
 
   // Заполняем таблицу Memory
-
   for i := 1 to frmMain.sgMemory.RowCount - 1 do
     for j := 1 to frmMain.sgMemory.ColCount - 1 do
       frmMain.sgMemory.Cells[j, i] := format('%.2x',[RAM[(i-1)*16 + (j-1)]]);

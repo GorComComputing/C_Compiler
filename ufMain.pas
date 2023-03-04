@@ -1,4 +1,5 @@
 unit ufMain;
+{Главное окно}
 
 interface
 
@@ -7,8 +8,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls,
   Vcl.Menus, Vcl.ComCtrls,
   System.Types, System.IOUtils, Vcl.Buttons,
-  uOVM, uSimulator,
-  uText, uScan, uGen, uPars;
+  uOVM, uSimulator,           // Виртуальные машины
+  uText, uScan, uGen, uPars;  // Компилятор Oberon
 
 
 type
@@ -152,7 +153,6 @@ type
     procedure SpeedButton1Click(Sender: TObject);
     procedure OberonCompile1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
-    procedure SpeedButton3Click(Sender: TObject);
     procedure Saveprogram1Click(Sender: TObject);
 
 
@@ -183,6 +183,8 @@ implementation
 
 {$R *.dfm}
 
+
+// Запуск ассемблера
 procedure TfrmMain.Assembly1Click(Sender: TObject);
 var
   s: String;
@@ -191,12 +193,16 @@ begin
   mConsole.Text := s;
 end;
 
+
+// Сброс процессора
 procedure TfrmMain.btnResetClick(Sender: TObject);
 begin
   // Сброс процессора
   ResetCPU();
 end;
 
+
+// Запуск процессора
 procedure TfrmMain.btnRunClick(Sender: TObject);
 begin
   if isRun = False then
@@ -213,6 +219,8 @@ begin
     end;
 end;
 
+
+// Шаг осциллятора
 procedure TfrmMain.btnStepClick(Sender: TObject);
 begin
   Case cmbCPUType.ItemIndex of
@@ -222,6 +230,8 @@ begin
   End;
 end;
 
+
+// Очистка памяти
 procedure TfrmMain.Clearmemory1Click(Sender: TObject);
 var
   i, j: Integer;
@@ -238,10 +248,12 @@ begin
   sgMemory.Selection := TGridRect(rect(1, 1, 1, 1));
 end;
 
+
+// Выбор процессора
 procedure TfrmMain.cmbCPUTypeChange(Sender: TObject);
 begin
    Case cmbCPUType.ItemIndex of
-   0: begin
+   0: begin    // Simulator
     Label1.Visible := True;
     Label2.Visible := True;
     Label3.Visible := True;
@@ -318,7 +330,7 @@ begin
     Label67.Visible := False;
 
    end;
-   1: begin
+   1: begin     // AON
     Label1.Visible := True;
     Label2.Visible := True;
     Label3.Visible := True;
@@ -391,7 +403,7 @@ begin
     Label66.Visible := True;
     Label67.Visible := True;
    end;
-   2: begin
+   2: begin    // OVM
     Label1.Visible := False;
     Label2.Visible := False;
     Label3.Visible := False;
@@ -467,11 +479,12 @@ begin
     Label67.Visible := False;
    end;
 
-
    End;
 
 end;
 
+
+// Выбора частоты осциллятора
 procedure TfrmMain.cmbHzChange(Sender: TObject);
 begin
 Case cmbHz.ItemIndex of
@@ -482,18 +495,24 @@ Case cmbHz.ItemIndex of
 End;
 end;
 
+
+// Настройки цвета фона
 procedure TfrmMain.Color1Click(Sender: TObject);
 begin
   if ColorDialog1.Execute then
     mEditor.Color := ColorDialog1.Color;
 end;
 
+
+// Настройки шрифта
 procedure TfrmMain.Font1Click(Sender: TObject);
 begin
   if FontDialog1.Execute then
     mEditor.Font := FontDialog1.Font;
 end;
 
+
+// При создании главного окна
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
   i, j, n: Integer;
@@ -547,13 +566,17 @@ begin
 
   ConsoleHeight := mConsole.Height;
 
+  // Проверка параметров командной строки
   if ParamCount > 0 then begin
+
+    // исходник
     if (ParamStr(1)[Length(ParamStr(1)) ] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 2] = '.') then  begin
       frmMain.Caption := 'Виртуальный процессор 8-bit-AON - ' + ParamStr(1);
       mEditor.Lines.LoadFromFile(ParamStr(1));
       mEditor.Text := Utf8ToAnsi(mEditor.Text);
     end;
 
+    // машинный код
     if (ParamStr(1)[Length(ParamStr(1)) ] = 'o') and (ParamStr(1)[Length(ParamStr(1)) - 1] = 'c') and (ParamStr(1)[Length(ParamStr(1)) - 2] = 'g') and (ParamStr(1)[Length(ParamStr(1)) - 3] = '.') then  begin
       // Сброс процессора
       ResetCPU();
@@ -590,11 +613,12 @@ begin
   end;
 end;
 
+
+// Загрузка тестовой программы в OVM
 procedure TfrmMain.LoadOVM1Click(Sender: TObject);
 var
   i, j: Integer;
 begin
-
     // Сброс процессора
     ResetCPU();
 
@@ -698,6 +722,8 @@ begin
 
 end;
 
+
+// Открыть файл с программой
 procedure TfrmMain.LoadProgram1Click(Sender: TObject);
 var
   i, j, n: Integer;
@@ -734,15 +760,18 @@ begin
     //exit;
 end;
 
+
+// Тестовая (не используется)
 procedure TfrmMain.LowerCase1Click(Sender: TObject);
 begin
    mEditor.Lines.Text := AnsiLowerCase(mEditor.Lines.Text);
 end;
 
+
+// Запуск компилятора Oberon
 procedure TfrmMain.OberonCompile1Click(Sender: TObject);
 begin
    mConsole.Lines.add('Компилятор языка Оberon');
-
    ResetText;
    InitScan;
    {NextLex;
@@ -751,19 +780,13 @@ begin
     NextLex;
     frmMain.mConsole.lines.text := frmMain.mConsole.lines.text + IntToStr(integer(Lex));
    end;  }
-
-
    InitGen;
-
    Compile; {Компиляция}
-   //Run;     {Выполнение}
-
 end;
 
+
+// Открыть файл с исходником
 procedure TfrmMain.Openfile1Click(Sender: TObject);
-//var
- // i, j, n: Integer;
- // f: File;
 begin
   if OpenDialog1.Execute then
    begin
@@ -775,6 +798,8 @@ begin
     //exit;
 end;
 
+
+// Тестовая (не используется)
 procedure TfrmMain.UpperCase1Click(Sender: TObject);
 begin
   mEditor.Lines.Text := AnsiUpperCase(mEditor.Lines.Text);
@@ -787,6 +812,8 @@ begin
   btnReset.Click();
 end;
 
+
+// Сброс процессора
 procedure TfrmMain.ResetCPU();
 var
    i: Integer;
@@ -829,12 +856,14 @@ begin
 end;
 
 
+// Запуск процессора
 procedure TfrmMain.Run1Click(Sender: TObject);
 begin
   btnRun.Click();
 end;
 
 
+// Сохранение исходника в файл
 procedure TfrmMain.Save1Click(Sender: TObject);
 begin
   if SaveDialog1.Execute then
@@ -844,9 +873,10 @@ begin
     end;
 end;
 
+
+// Сохранение машинного кода в файл
 procedure TfrmMain.Saveprogram1Click(Sender: TObject);
 var
- // i, j, n: Integer;
   f: File;
 begin
   if SaveDialog1.Execute then
@@ -856,14 +886,17 @@ begin
     blockwrite(f, RAM, 256);
     Label5.Caption := 'Memory: ' + SaveDialog1.FileName;
     end;
-
 end;
 
+
+// Спрятать/показать панель процессора
 procedure TfrmMain.SpeedButton1Click(Sender: TObject);
 begin
   aPanel1.Visible := not aPanel1.Visible;
 end;
 
+
+// Спрятать/показать редактор
 procedure TfrmMain.SpeedButton2Click(Sender: TObject);
 begin
     mEditor.Visible := not mEditor.Visible;
@@ -879,20 +912,15 @@ begin
 
 end;
 
-procedure TfrmMain.SpeedButton3Click(Sender: TObject);
-var
-  i: Integer;
-begin
-  for i := 0 to ParamCount do
-    ShowMessage('Параметр '+IntToStr(i)+' = '+ParamStr(i));
-end;
 
+// Шаг осциллятора
 procedure TfrmMain.Step1Click(Sender: TObject);
 begin
   btnStep.Click();
 end;
 
 
+// Таймер осциллятора
 procedure TfrmMain.Timer1Timer(Sender: TObject);
 begin
   Case cmbCPUType.ItemIndex of

@@ -1,5 +1,5 @@
 unit uTable;
-{ Таблица имен }
+{Таблица имен}
 
 interface
 
@@ -51,12 +51,15 @@ var
    Bottom : tObj;  {Указатель на конец (дно) списка}
    CurrObj: tObj;
 
+
 {Инициализация таблицы имен}
 procedure InitNameTable;
 begin
    Top := nil;
 end;
 
+
+{Добавление элемента}
 procedure Enter(N: tName; C: tCat; T: tType; V: integer);
 var
   P : tObj;
@@ -70,6 +73,8 @@ begin
    Top := P;
 end;
 
+
+{Открытие области видимости (блока)}
 procedure OpenScope;
 begin
    Enter( '', catGuard, typNone, 0 );
@@ -77,6 +82,8 @@ begin
       Bottom := Top;
 end;
 
+
+{Закрытие области видимости (блока)}
 procedure CloseScope;
 var
    P : tObj;
@@ -91,6 +98,8 @@ begin
    Dispose(P);
 end;
 
+
+{Занесение нового имени}
 procedure NewName(Name: tName; Cat: tCat; var Obj: tObj);
 begin
    Obj := Top;
@@ -108,6 +117,8 @@ begin
       Error('Повторное объявление имени');
 end;
 
+
+{Поиск имени}
 procedure Find(Name: tName; var Obj: tObj);
 begin
    Bottom^.Name := Name;
@@ -118,12 +129,16 @@ begin
       Error('Необъявленное имя');
 end;
 
+
+{Поиск первой переменной}
 procedure FirstVar(var VRef : tObj);
 begin
    CurrObj := Top;
    NextVar(VRef);
 end;
 
+
+{Поиск следующей переменной}
 procedure NextVar(var VRef : tObj);
 begin
    while (CurrObj<>Bottom) and (CurrObj^.Cat<>catVar) do

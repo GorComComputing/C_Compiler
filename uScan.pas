@@ -1,5 +1,5 @@
 unit uScan;
-{ Сканер }
+{Лексический анализатор}
 
 interface
 
@@ -8,6 +8,7 @@ const
 
 type
    tName = string[NameLen];
+   // объявляем класс Lex с перечислением лексем
    tLex =  (lexNone, lexName, lexNum,
             lexMODULE, lexIMPORT, lexBEGIN, lexEND,
             lexCONST,  lexVAR,  lexWHILE, lexDO,
@@ -35,19 +36,22 @@ uses
    uText, uError;
 
 const
-   KWNum = 34;
+   KWNum = 34;  // количество лексем
 
 type
    tKeyWord = string[9]; {Длина слова PROCEDURE}
 
 var
    nkw      : integer;
+   //хэш-таблица (словарь)
    KWTable  : array [1..KWNum] of
       record
          Word  : tKeyWord;
          Lex   : tLex;
       end;
 
+
+// Добавляет ключевое слово в таблицу (для инициализации таблицы)
 procedure EnterKW(Name: tKeyWord; Lex: tLex);
 begin
    nkw := nkw + 1;
@@ -55,19 +59,23 @@ begin
    KWTable[nkw].Lex := Lex;
 end;
 
+
+// Проверка наличия имени в словаре ключевых слов
 function TestKW: tLex;
 var
    i : integer;
 begin
    i := nkw;
    while (i>0) and (Name <> KWTable[i].Word) do
-      i := i-1;
-   if i>0 then
+      i := i - 1;
+   if i > 0 then
       TestKW := KWTable[i].Lex
    else
       TestKW := lexName;
 end;
 
+
+// Собирает имя идентификатора в одну строку
 procedure Ident;
 var
    i : integer;
@@ -76,44 +84,50 @@ begin
    repeat
       if i < NameLen then begin
          i := i + 1;
-         Name[i] := AnsiChar(Ch);
+         Name[i] := AnsiChar(Ch); // читаем остальные символы и цифры
          end
       else
          Error('Слишком длинное имя');
       NextCh;
    until not (Ch in ['A'..'Z', 'a'..'z', '0'..'9']);
-   Name[0] := AnsiChar(chr(i)); {Длина строки Name теперь равна i}
-   Lex := TestKW;     {Проверка на ключевое слово}
+   Name[0] := AnsiChar(chr(i)); // Длина строки Name теперь равна i
+   Lex := TestKW;     // Проверка на ключевое слово
 end;
 
+
+// собираем число
 procedure Number;
 var
    d : integer;
 begin
    Lex := lexNum;
    Num := 0;
-   repeat
-      d := ord(Ch) - ord('0');
-      if (Maxint - d) div 10 >= Num then
-         Num := 10*Num + d
+   repeat  // пока идут цифры
+      d := ord(Ch) - ord('0'); // перевод из строки в int через вычитание кода ASCII
+      if (Maxint - d) div 10 >= Num then   // проверка на размер int
+         Num := 10*Num + d  // накапливание числа слева направо
       else
          Error('Слишком большое число');
       NextCh;
    until not (Ch in ['0'..'9']);
 end;
 
+
+// обработка комментариев
 procedure Comment;
 begin
-   NextCh;
+   NextCh;  // пропуск *
    repeat
       while (Ch <> '*') and (Ch <> chEOT) do
-         if Ch = '(' then begin
-            NextCh;
-            if Ch = '*' then Comment;
-            end
-         else
-            NextCh;
-      if Ch = '*' then
+        // проверяем на начало вложенного комментария
+        if Ch = '(' then
+          begin
+          NextCh;
+          if Ch = '*' then Comment;
+          end
+        else
+          NextCh;
+      if Ch = '*' then  // здесь *
          NextCh;
    until Ch in [')', chEOT];
    if Ch = ')' then
@@ -124,42 +138,20 @@ begin
    end;
 end;
 
-(*
-procedure Comment;
-var
-   Level : integer;
-begin
-   Level := 1;
-   NextCh;
-   repeat
-      if Ch = '*' then begin
-         NextCh;
-         if Ch = ')' then
-            begin Level := Level - 1; NextCh end;
-         end
-      else if Ch = '(' then begin
-         NextCh;
-         if Ch = '*' then
-            begin Level := Level + 1; NextCh end;
-         end
-      else {if Ch <> chEOT then}
-         NextCh;
-   until (Level = 0) or (Ch = chEOT);
-   if Level <> 0 then begin
-      LexPos := Pos;
-      Error('Не закончен комментарий');
-   end;
-end;
-*)
 
+// функция выбора следующей лексемы (это и есть сам сканер)
 procedure NextLex;
 begin
+   // пропускаем пробелы, табуляцию, и конец строки
    while Ch in [chSpace, chTab, chEOL] do NextCh;
+
+   // переводим указатель курсора на начало лексемы
    LexPos := Pos;
+
    case Ch of
-   'A'..'Z', 'a'..'z':
+   'A'..'Z', 'a'..'z':  // если сивол (большой и малый регистр)
       Ident;
-   '0'..'9':
+   '0'..'9':            // если цифра
       Number;
    ';':
       begin
@@ -220,8 +212,8 @@ begin
       begin
          NextCh;
          if Ch = '*' then begin
-            Comment;
-            NextLex;
+            Comment;  // пропускаем комментарий
+            NextLex;  // вызываем новую лексему
             end
          else
             Lex := lexLpar;
@@ -246,13 +238,15 @@ begin
          NextCh;
          Lex := lexMult;
       end;
-   chEOT:
+   chEOT:         // если конец файла
       Lex := lexEOT;
    else
       Error('Недопустимый символ');
    end;
 end;
 
+
+// Заполняем таблицу ключевых слов при инициализации
 procedure InitScan;
 begin
    nkw := 0;

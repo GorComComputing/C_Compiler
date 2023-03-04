@@ -1279,6 +1279,7 @@ object frmMain: TfrmMain
       end
       object Reset1: TMenuItem
         Caption = 'Reset'
+        ShortCut = 119
         OnClick = Reset1Click
       end
       object N2: TMenuItem
