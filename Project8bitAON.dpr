@@ -10,7 +10,10 @@ uses
   uScan in 'uScan.pas',
   uGen in 'uGen.pas',
   uTable in 'uTable.pas',
-  uPars in 'uPars.pas';
+  uPars in 'uPars.pas',
+  uAsmScan in 'uAsmScan.pas',
+  uAsmTable in 'uAsmTable.pas',
+  uAsmUnit in 'uAsmUnit.pas';
 
 {$R *.res}
 

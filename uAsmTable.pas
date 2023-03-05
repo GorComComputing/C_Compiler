@@ -8,12 +8,12 @@ uses
 
 type
 
-	tObj = ^tObjRec;
+	tObj = ^tObjRec;          {Тип указателя на запись таблицы}
 
-	tObjRec = record
-		Name        : tName;
+	tObjRec = record          {Тип записи таблицы имен}
+		Name        : tName;    {Ключ поиска            }
 		Addr        : integer;
-		Prev        : tObj;
+		Prev        : tObj;     {Указатель на пред. имя }
 	end;
 
 procedure InitNameTable;
@@ -28,13 +28,17 @@ uses
 	uError;
 
 var
-	Top   : tObj;
+	Top   : tObj;             {Указатель на вершину списка    }
 
+
+// Инициализация таблицы имен
 procedure InitNameTable;
 begin
 	Top := nil;
 end;
 
+
+// Занесение нового имени
 procedure NewName(Addr : integer);
 var
 	Obj : tObj;
@@ -53,6 +57,8 @@ begin
 		Error('Повторное объявление имени');
 end;
 
+
+// Поиск имени
 procedure Find(var Addr : integer);
 var
 	Obj : tObj;

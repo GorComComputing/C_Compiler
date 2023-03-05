@@ -22,8 +22,10 @@ type
 	tLineProc = procedure;
 
 var
-	PC : integer;
+	PC : integer;             // Счетчик команд времени компиляции
 
+
+// Генерация машинной команды
 procedure Gen( Cmd : integer );
 begin
 	if PC < MemSize then begin
@@ -34,7 +36,9 @@ begin
 		Error('Недостаточно памяти');
 end;
 
+
 {$F+}
+// Для первого прохода
 (* Строка  = [метка][число|имя|код] *)
 procedure LineFirst;
 begin
@@ -48,6 +52,8 @@ begin
 	end;
 end;
 
+
+// Для второго прохода
 procedure LineSecond;
 var
 	Addr : integer;
@@ -75,6 +81,7 @@ begin
 end;
 {$F-}
 
+
 (* Программа = Строка { перевод_строки Строка }  *)
 procedure Pass(Line : tLineProc);
 begin
@@ -90,6 +97,8 @@ begin
 		Error('Ошибка');
 end;
 
+
+// основная функция ассемблера
 procedure Assemble;
 var
   i, j: Integer;

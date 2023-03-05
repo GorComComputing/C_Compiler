@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>Project8bitAON.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -115,6 +115,9 @@
         <DCCReference Include="uGen.pas"/>
         <DCCReference Include="uTable.pas"/>
         <DCCReference Include="uPars.pas"/>
+        <DCCReference Include="uAsmScan.pas"/>
+        <DCCReference Include="uAsmTable.pas"/>
+        <DCCReference Include="uAsmUnit.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

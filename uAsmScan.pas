@@ -11,10 +11,10 @@ type
 	tLex = (lexLabel, lexOpCode, lexNum, lexName,  lexEOL, lexEOT);
 
 var
-	Lex      : tLex;
-	Num      : integer;
+	Lex      : tLex;      {“екуща€ лексема            }
+	Num      : integer;   {«начение числовых литералов}
 	OpCode   : integer;
-	Name     : tName;
+	Name     : tName;     {—троковое значение имени   }
 
 	LexPos   : integer;
 
@@ -29,7 +29,7 @@ uses
 	uText, uError, uOVM;
 
 const
-	CmdNum = 31;
+	CmdNum = 31;    // количество команд
 
 type
 	tMnemo = string[5];
@@ -39,6 +39,8 @@ var
 	Code  : array [1..CmdNum] of integer;
 	Mnemo : array [1..CmdNum] of tMnemo;
 
+
+// ƒобавл€ет мнемонику в таблицу (дл€ инициализации таблицы)
 procedure EnterCode( Op : integer; Mn : tMnemo );
 begin
 	cmd := cmd + 1;
@@ -46,6 +48,8 @@ begin
 	Mnemo[cmd] := Mn;
 end;
 
+
+// ѕроверка наличи€ имени в словаре мнемоники
 procedure TestOpCode;
 var
 	i : integer;
@@ -61,6 +65,8 @@ begin
 	end;
 end;
 
+
+// —обирает им€ идентификатора в одну строку
 procedure Ident;
 var
 	i : integer;
@@ -83,6 +89,8 @@ begin
 		TestOpCode;
 end;
 
+
+// собираем число
 procedure Number;
 var
 	d : integer;
@@ -99,6 +107,8 @@ begin
 	until not ( Ch in ['0'..'9'] );
 end;
 
+
+// функци€ выбора следующей лексемы (это и есть сам сканер)
 procedure NextLex;
 begin
 	while Ch in [' ', chTab] do NextCh;
@@ -126,6 +136,8 @@ begin
 	end;
 end;
 
+
+// «аполн€ем таблицу соответстви€ мнемоники машинным командам при инициализации
 procedure InitScan;
 begin
 	cmd := 0;
